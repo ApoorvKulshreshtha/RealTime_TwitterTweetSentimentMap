@@ -4,7 +4,7 @@
 This project was done as part of Cloud Computing and Big Data course at Columbia University (Fall 2016).
 
 
-Project Collaborators Apoorv Kulshreshtha ak3963 Yogeshwar Mutneja ym2578
+Project Collaborators: Apoorv Kulshreshtha ak3963, Yogeshwar Mutneja ym2578
 
 
 Requirements
