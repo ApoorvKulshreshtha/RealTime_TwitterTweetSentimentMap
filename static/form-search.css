@@ -1,0 +1,19 @@
+.form-search {
+    margin:auto;
+    height:100px;
+    width:600px;
+    z-index:10;
+    position: fixed;
+    padding: 10px;
+}
+
+.search-bar{
+    align:center;
+    height:30%;
+    width:30%
+}
+
+.search-button{
+    align:center;
+    height:30%;
+}
