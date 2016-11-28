@@ -1,0 +1,1 @@
+Need to install Tweepy 3.5.0, and make a modification in Tweepy source code and recompile Tweepy on the EC2 instance. Streaming.py function on readline.
