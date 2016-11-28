@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <link rel="stylesheet" href="/static/form-search.css">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Marker Clustering</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    </head>
+    <body>
+    <div class="main-content">
+          <form action="/keysearch" class="form-search" method="post">
+            <input class="search-bar" type="text" name="search"/>
+            <input type="submit" value="Search" class="search-button"></input>
+          </form>
+    </div>
+
+    <div id="map"></div>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.2.min.js"></script>
+    <script>
+        var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }}, map, markers = [];
+            	var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
+
+             var icons = {
+          positive: {
+            icon: iconBase + 'parking_lot_maps.png'
+          },
+          negative: {
+            icon: iconBase + 'library_maps.png'
+          },
+
+		  null: {
+            icon: iconBase + 'info-i_maps.png'
+          },
+
+          neutral: {
+            icon: iconBase + 'info-i_maps.png'
+          }
+        };
+        var infinity = function(){setInterval(function() {
+              $.getJSON($SCRIPT_ROOT + '/rt', {}, function(data) {
+                //result = data;
+                initializeStuff(data);
+                //initMap();
+                //addMarker(locations[1]);
+              });
+              return false;
+            },10000)};
+
+        infinity();
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 3,
+          center: {lat: 48.5602, lng: -119.5752}
+        });
+
+        // Create an array of alphabetical characters used to label the markers.
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        map.addListener('click', function (event) {
+          la = event.latLng.lat().toFixed(4);
+          lo = event.latLng.lng().toFixed(4);
+          coords = {
+            lat: la,
+            long: lo
+          };
+          $.getJSON($SCRIPT_ROOT + '/geospatial', coords, function(data) {
+            /*result = data;
+            initializeStuff(data);
+            initMap();*/
+            //if (data == 1) {
+              //addMarker(locations[1]);//{lat: 73.8248, long: -45.5273});
+            //}
+            console.log(data);
+          });
+        });
+
+        // Add some markers to the map.
+        // Note: The code uses the JavaScript Array.prototype.map() method to
+        // create an array of markers based on a given "locations" array.
+        // The map() method here has nothing to do with the Google Maps API.
+        // console.log(text);
+        /*
+          var markers2 = locations.map(function(location, i) {
+          m = new google.maps.Marker({
+            position: location,
+            label: labels[i % labels.length],
+            title: text[i]
+          });
+          markers.push(m);
+          return m;
+        });
+*/
+        // Add a marker clusterer to manage the markers.
+      }
+
+      // Adds a marker to the map and push to the array.
+      function addMarker(location, text,sentiment) {
+        console.log(location);
+          //deleteMarkers();
+        var marker = new google.maps.Marker({
+          position: location,
+          map: map,
+          title: text,
+          icon: icons[sentiment].icon
+        });
+        markers.push(marker);
+      }
+
+      // Sets the map on all markers in the array.
+      function setMapOnAll(map) {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+      }
+
+      // Removes the markers from the map, but keeps them in the array.
+      function clearMarkers() {
+        setMapOnAll(null);
+      }
+
+      // Shows any markers currently in the array.
+      function showMarkers() {
+        setMapOnAll(map);
+      }
+
+      // Deletes all markers in the array by removing references to them.
+      function deleteMarkers() {
+        clearMarkers();
+        markers = [];
+      }
+
+      var locations=[], i, text=[];
+        var sentiment=[];
+      {% for r in result['hits']['hits'] %}
+      var a={{r['_source']['coordinates'][0]}},
+          b={{r['_source']['coordinates'][1]}}
+          c="{{r['_source']['text'].replace('\n', '')}}",
+          d="{{r['_source']['sentiment']}}";
+
+      locations.push({lat:b,lng:a});
+      text.push(c);
+          sentiment.push(d);
+      {% endfor %}
+  
+      var initializeStuff = function(result) {
+        locations = [];
+        text = [];
+          sentiment = [];
+        deleteMarkers();
+        var size = result['hits']['hits'].length, r, a, b,s;
+
+        for (var i = 0;i<size; i++){
+          r = result['hits']['hits'][i];
+          a = r['_source']['coordinates'][0];
+          b = r['_source']['coordinates'][1];
+          c = r['_source']['text'].replace('\n', '');
+
+          s = r['_source']['sentiment'];
+            locations.push({lat:b,lng:a});
+          text.push(c);
+          sentiment.push(s);
+            addMarker(locations[i], text[i],sentiment[i]);
+        }
+
+
+      }
+
+    </script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2cUJcxExFX3fH4GjknvNVYW-BoaNJ_pY&callback=initMap">
+    </script>
+  </body>
+</html>

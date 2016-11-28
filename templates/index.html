@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Flask-SocketIO Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+</head>
+<body>
+    <button onclick="keysearch()">Click me</button>
+    <form name="myForm">
+    <input type="text" name="fname">
+    </form>
+
+    <div id="map"></div>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+
+        var map;
+      var features;
+      var icons = {
+          positive: {
+            icon: '/static/s_h.png'
+          },
+          negative: {
+            icon: '/static/s_s.png'
+          },
+          neutral: {
+            icon: '/static/s_n.png'
+          }
+        };
+
+
+        function addMarker(feature) {
+          var marker = new google.maps.Marker({
+            position: feature.position,
+            title:feature.title,
+            icon: icons[feature.type].icon,
+            map: map
+          });
+        }
+
+
+
+        function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 16,
+          center: new google.maps.LatLng(-33.91722, 151.23064),
+          mapTypeId: 'roadmap'
+        });
+      }
+
+
+
+
+
+        $(document).ready(function() {
+            namespace = '/test';
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+            socket.on('my_response', function(msg) {
+                console.log(msg)
+                feature={
+            position: new google.maps.LatLng(msg.positionx, msg.positiony),
+            title:msg.title,
+            type: msg.type
+          }
+          console.log(feature)
+        addMarker(feature);
+            });
+        });
+
+
+    function keysearch() {
+    var x = document.forms["myForm"]["fname"].value;
+
+        $.post('/rtw', {x}, function(result) {
+                alert(result);
+              });
+
+
+
+    }
+
+
+    </script>
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAo5XH6GSW6zRMcT1rpNTOg0qAutdpSkxg&callback=initMap">
+    </script>
+
+
+</body>
+</html>
