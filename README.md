@@ -39,3 +39,7 @@ Project modules:
 Below is the architecture diagram of the project:
 
 ![alt tag](http://i.imgur.com/ouIDUJT.png)
+
+
+Following is the link to the project deployed on EBS:
+http://flask4.yj7reggdi8.us-west-2.elasticbeanstalk.com/
