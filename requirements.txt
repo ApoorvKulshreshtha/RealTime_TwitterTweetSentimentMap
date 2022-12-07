@@ -1,7 +1,7 @@
 awsebcli==3.8.3
 botocore==1.4.66
 cement==2.8.2
-certifi==2016.9.26
+certifi==2022.12.7
 colorama==0.3.7
 config==0.3.9
 docker-py==1.7.2
